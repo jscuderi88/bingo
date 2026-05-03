@@ -119,8 +119,11 @@ input:focus, select:focus, button:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  background: var(--cream-deep);
+  padding: 22px 18px;
+  border-radius: 16px;
 }
-@media (min-width: 600px) { .setup-body { gap: 24px; } }
+@media (min-width: 600px) { .setup-body { gap: 24px; padding: 28px 24px; } }
 
 .form-group {
   display: flex;
@@ -183,9 +186,10 @@ input:focus, select:focus, button:focus-visible {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 6px;
-  background: var(--cream-deep);
+  background: var(--cream);
   padding: 6px;
   border-radius: 12px;
+  border: 1px solid var(--line-soft);
 }
 .toggle-btn {
   background: transparent;

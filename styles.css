@@ -546,10 +546,10 @@ input:focus, select:focus, button:focus-visible {
 
 .ball-num {
   font-family: var(--font-display);
-  font-size: clamp(110px, 22vw, 240px);
+  font-size: clamp(90px, 18vw, 200px);
   font-weight: 600;
   color: var(--rose-deep);
-  line-height: 0.95;
+  line-height: 1;
   letter-spacing: -0.02em;
   text-shadow: 0 4px 12px rgba(155, 100, 85, 0.22);
 }
@@ -560,11 +560,13 @@ input:focus, select:focus, button:focus-visible {
 .ball-name {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: clamp(15px, 2.4vw, 24px);
+  font-size: clamp(20px, 3.4vw, 32px);
   color: var(--rose);
-  margin-top: 8px;
+  margin-top: 18px;
   letter-spacing: 0.02em;
-  max-width: 80%;
+  max-width: 88%;
+  font-weight: 500;
+  line-height: 1.15;
 }
 .ball.ball-empty .ball-name { display: none; }
 
@@ -789,9 +791,10 @@ input:focus, select:focus, button:focus-visible {
 .cell-name {
   font-family: var(--font-display);
   font-style: italic;
-  font-size: 11px;
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 500;
   color: var(--ink-soft);
-  margin-top: 4px;
+  margin-top: 5px;
   line-height: 1.2;
   word-break: break-word;
   max-width: 100%;

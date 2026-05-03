@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta name="theme-color" content="#F5EFE7">
+<title>Bingo · Consultora Natura &amp; Belleza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Cormorant+Infant:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ============== SETUP MODAL ============== -->
+<div id="setupModal" class="setup-modal" role="dialog" aria-label="Configurar bingo">
+  <div class="setup-card">
+    <div class="setup-head">
+      <img src="assets/logo.jpg" alt="Logo" class="setup-logo" onerror="this.style.display='none'">
+      <h1 class="setup-title">BINGO</h1>
+      <p class="setup-sub">Configurá tu partida</p>
+    </div>
+
+    <div class="setup-body">
+      <!-- Rango -->
+      <div class="form-group">
+        <label class="form-label">Cantidad de números (del 1 al N)</label>
+        <div class="form-row">
+          <input type="number" id="cfgMaxNumber" min="2" max="999" value="20" class="form-input">
+          <div class="form-hint">N</div>
+        </div>
+      </div>
+
+      <!-- Repetición -->
+      <div class="form-group">
+        <label class="form-label">¿Se puede repetir un número?</label>
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn active" data-allow-rep="true">Sí, repetir</button>
+          <button type="button" class="toggle-btn" data-allow-rep="false">Bingo clásico (sin repetir)</button>
+        </div>
+      </div>
+
+      <!-- Repeticiones -->
+      <div class="form-group" id="grpReps">
+        <label class="form-label">¿Cuántas veces debe salir un número para ganar?</label>
+        <div class="form-row">
+          <input type="number" id="cfgRepsToWin" min="1" max="20" value="4" class="form-input">
+          <div class="form-hint">veces</div>
+        </div>
+        <div class="form-help">Si elegiste &laquo;sin repetir&raquo; este valor se ignora.</div>
+      </div>
+
+      <!-- Modo etiqueta -->
+      <div class="form-group">
+        <label class="form-label">¿Mostrar nombres en el cartón?</label>
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn" data-name-mode="numbers">Solo números</button>
+          <button type="button" class="toggle-btn active" data-name-mode="both">Número + Nombre</button>
+          <button type="button" class="toggle-btn" data-name-mode="names">Solo nombre</button>
+        </div>
+      </div>
+
+      <!-- Columnas del cartón -->
+      <div class="form-group">
+        <label class="form-label">Columnas del tablero</label>
+        <div class="form-row">
+          <input type="number" id="cfgCols" min="2" max="20" value="5" class="form-input">
+          <div class="form-hint">cols</div>
+        </div>
+        <div class="form-help">Las filas se calculan automáticamente.</div>
+      </div>
+
+      <!-- Nombres por número -->
+      <div class="form-group">
+        <label class="form-label">Nombres (opcional, asignar por número)</label>
+        <button type="button" id="btnEditNames" class="btn-secondary">Editar nombres &rarr;</button>
+        <div class="form-help"><span id="namesCount">0</span> nombres asignados.</div>
+      </div>
+    </div>
+
+    <div class="setup-foot">
+      <button type="button" id="btnStartGame" class="btn-primary">EMPEZAR PARTIDA &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== NAMES EDITOR ============== -->
+<div id="namesModal" class="names-modal" hidden>
+  <div class="names-card">
+    <div class="names-head">
+      <h2>Asignar nombres</h2>
+      <button type="button" class="btn-close" id="namesClose" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="names-body">
+      <p class="form-help">Cada número del 1 al N puede tener un nombre asignado (comprador del cartón). Si lo dejás vacío, se muestra solo el número.</p>
+      <div id="namesGrid" class="names-grid"></div>
+    </div>
+    <div class="names-foot">
+      <button type="button" id="namesClearAll" class="btn-secondary">Borrar todo</button>
+      <button type="button" id="namesSave" class="btn-primary">GUARDAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============== GAME SCREEN ============== -->
+<div id="game" class="game" hidden>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="assets/logo.jpg" alt="Logo" class="topbar-logo" onerror="this.style.display='none'">
+      <div class="topbar-title">BINGO</div>
+    </div>
+    <div class="topbar-controls">
+      <button type="button" class="icon-btn" id="btnSound" title="Sonido" aria-label="Sonido">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="btnFullscreen" title="Pantalla completa" aria-label="Pantalla completa">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="btnReset" title="Reiniciar" aria-label="Reiniciar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-7.07 3.41M3 4v5h5"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="btnSettings" title="Configuración" aria-label="Configuración">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <main class="game-main">
+    <!-- LEFT: ball reveal -->
+    <section class="ball-section">
+      <div class="ball-stage">
+        <div id="ball" class="ball ball-empty">
+          <span class="ball-num">—</span>
+          <span class="ball-name"></span>
+        </div>
+        <div id="winnerBanner" class="winner-banner" hidden>
+          <div class="winner-eyebrow">¡BINGO!</div>
+          <div class="winner-num" id="winnerNum">—</div>
+          <div class="winner-name" id="winnerName"></div>
+          <div class="winner-actions">
+            <button type="button" id="btnNewGame" class="btn-primary">NUEVA PARTIDA</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="draw-controls">
+        <button type="button" id="btnDraw" class="btn-draw">SORTEAR <span class="btn-draw-arrow">&rarr;</span></button>
+        <div class="auto-controls">
+          <label class="auto-label">
+            <input type="checkbox" id="cfgAuto"> Auto-sortear cada
+          </label>
+          <select id="cfgAutoSpeed" class="select-mini">
+            <option value="2000">2 seg</option>
+            <option value="3500" selected>3.5 seg</option>
+            <option value="5000">5 seg</option>
+            <option value="8000">8 seg</option>
+          </select>
+        </div>
+        <div class="draw-stats">
+          <span><strong id="statDraws">0</strong> bolas sorteadas</span>
+          <span class="dot">·</span>
+          <span><strong id="statRemaining">—</strong> restantes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: board + history -->
+    <section class="board-section">
+      <div class="board-head">
+        <h2>Tablero</h2>
+        <div class="board-legend">
+          <span class="legend-item"><span class="legend-dot legend-dot-fresh"></span> Sin salir</span>
+          <span class="legend-item"><span class="legend-dot legend-dot-partial"></span> Salido</span>
+          <span class="legend-item"><span class="legend-dot legend-dot-winner"></span> Ganador</span>
+        </div>
+      </div>
+      <div id="board" class="board"></div>
+
+      <div class="history-section">
+        <h3>Historial <span class="history-count" id="historyCount">0</span></h3>
+        <div id="history" class="history"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============== CONFETTI CANVAS ============== -->
+<canvas id="confetti" class="confetti-canvas" aria-hidden="true"></canvas>
+
+<script src="app.js"></script>
+</body>
+</html>
